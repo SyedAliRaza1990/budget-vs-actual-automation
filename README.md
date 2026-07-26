@@ -139,10 +139,15 @@ Built to demonstrate practical automation skills for **Finance Automation, FP&A,
 
 ---
 
-## 👤 Author
+## 👤 About the Author
 
-**Syed Ali Raza** — Finance & Accounts professional (Treasury, Tax Compliance, FP&A) transitioning into Finance Automation.
+### Syed Ali Raza
+**Finance & Accounts Professional | Transitioning into Finance Automation, FP&A & Accounting Systems**
 
-- 💼 [LinkedIn](https://www.linkedin.com/in/syed-ali-raza1990/)
-- 🧑‍💻 [Upwork](https://www.upwork.com/freelancers/syedaliraza73)
-- 📧 [Alisherazi51215@Yahoo.Com](mailto:Alisherazi51215@Yahoo.Com)
+10+ years of experience spanning Treasury Operations, Tax Compliance (US, UK & Pakistan), US GAAP & IFRS, FP&A, and Bookkeeping. Currently pursuing an **MBA in Finance** and **CMA USA**, and building a portfolio of AI-powered finance automation workflows (n8n + Google Gemini) to demonstrate how traditional finance expertise can be paired with automation tooling.
+
+Open to remote opportunities in **Finance Automation, FP&A, and Accounting Systems**.
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/syed-ali-raza1990/)
+[![Upwork](https://img.shields.io/badge/Upwork-Hire%20Me-6FDA44?style=for-the-badge&logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/syedaliraza73)
+[![Email](https://img.shields.io/badge/Email-Contact%20Me-D14836?style=for-the-badge&logo=yahoo&logoColor=white)](mailto:Alisherazi51215@Yahoo.Com)
