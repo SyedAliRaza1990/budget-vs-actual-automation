@@ -1,0 +1,265 @@
+{
+  "name": "Budget Vs Actual",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -448,
+        -16
+      ],
+      "id": "22e634a2-6527-4ec4-b646-6096ac91aa78",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-ZqxG_GO6IzcC-Li65xgjJq0GVZQVy_rpBG0I_9LsMc",
+          "mode": "list",
+          "cachedResultName": "Budget_vs_Actual",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-ZqxG_GO6IzcC-Li65xgjJq0GVZQVy_rpBG0I_9LsMc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Budget",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-ZqxG_GO6IzcC-Li65xgjJq0GVZQVy_rpBG0I_9LsMc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -240,
+        -112
+      ],
+      "id": "77d4422f-f619-493d-ba6e-43272c7e19f3",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oyVM3B0KNS3meEc0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-ZqxG_GO6IzcC-Li65xgjJq0GVZQVy_rpBG0I_9LsMc",
+          "mode": "list",
+          "cachedResultName": "Budget_vs_Actual",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-ZqxG_GO6IzcC-Li65xgjJq0GVZQVy_rpBG0I_9LsMc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1679762647,
+          "mode": "list",
+          "cachedResultName": "Actual",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-ZqxG_GO6IzcC-Li65xgjJq0GVZQVy_rpBG0I_9LsMc/edit#gid=1679762647"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        32
+      ],
+      "id": "8cca3350-c4f1-4ae9-a067-9314663b6bcd",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oyVM3B0KNS3meEc0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "Department",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        80,
+        -144
+      ],
+      "id": "0aaa6f2a-3c99-451d-9703-5453b3b8e91a",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  // Merge hone ki wajah se fields kabhi-kabhi JSON ke andar ya root par hoti hain, unhein handle kar rahe hain\n  const data = item.json;\n  const dep = data.Department || data.Department_1 || \"Unknown\";\n  \n  const budget = Number(data.Budget || 0);\n  const actual = Number(data.Actual || 0);\n  \n  // Variance Calculations\n  const varianceAmt = actual - budget;\n  const variancePct = budget !== 0 ? ((varianceAmt / budget) * 100).toFixed(2) : \"0.00\";\n  const status = varianceAmt > 0 ? \"Over Budget\" : \"Under Budget\";\n\n  return {\n    json: {\n      Department: dep,\n      Budget: budget,\n      Actual: actual,\n      VarianceAmount: varianceAmt,\n      VariancePercentage: `${variancePct}%`,\n      Status: status,\n      IsOverBudget: varianceAmt > 0\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        64
+      ],
+      "id": "62219c8e-3f72-41aa-a637-3f0bba175597",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a Senior FP&A Analyst. Analyze the following budget vs actual variance data and generate a concise executive summary for the CFO/Finance Director. \n\nInclude:\n1. Overall summary (Total Budget vs Total Actual)\n2. Departments exceeding budget and by how much\n3. Key commentary & actionable recommendations\n\nData:\n{{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        304,
+        -16
+      ],
+      "id": "734821d2-dd5b-4524-8ae6-f7d171af6679",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "PaB1ri20ep6LPh1i",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "sheraziali42@gmail.com",
+        "subject": "Monthly FP&A Report: Budget vs Actual Variance Analysis",
+        "message": "=<p>Hi Finance Team,</p>\n\n<p>Please find below the automated AI Executive Summary for this month's Budget vs Actual Variance Analysis:</p>\n\n<hr />\n\n<div style=\"font-family: Arial, sans-serif; line-height: 1.6;\">\n  <p><b>To:</b> CFO / Finance Director<br>\n  <b>From:</b> Senior FP&A Analyst<br>\n  <b>Subject:</b> Budget vs. Actual Variance Analysis Summary</p>\n\n  <h3 style=\"color: #2c3e50;\">1. Overall Summary</h3>\n  <p>For the current period, the organization is tracking favorable to budget.</p>\n  <ul>\n    <li><b>Total Budget:</b> $3,000</li>\n    <li><b>Total Actual:</b> $2,800</li>\n    <li><b>Net Variance:</b> <span style=\"color: green;\">-$200 (-6.67% Favorable)</span></li>\n  </ul>\n\n  <h3 style=\"color: #2c3e50;\">2. Departments Exceeding Budget</h3>\n  <p>Based on the data provided, <b>no departments exceeded their budget.</b></p>\n  <ul>\n    <li><b>HR:</b> Currently operating at 6.67% under budget ($200 surplus).</li>\n  </ul>\n\n  <h3 style=\"color: #2c3e50;\">3. Key Commentary & Actionable Recommendations</h3>\n  <p><b>Commentary:</b></p>\n  <ul>\n    <li><b>HR Performance:</b> The HR department's under-spend of $200 is relatively immaterial but reflects positive cost control. This variance likely stems from lower-than-anticipated administrative expenses or a slight delay in scheduled HR initiatives/training programs.</li>\n  </ul>\n\n  <p><b>Actionable Recommendations:</b></p>\n  <ul>\n    <li><b>Distinguish Timing vs. Savings:</b> Determine if the $200 variance is a permanent cost saving or a \"timing difference\".</li>\n    <li><b>Reallocation Review:</b> Evaluate if these funds need to be rolled over to support recruitment drives or year-end compliance training.</li>\n    <li><b>Maintain Oversight:</b> Recommend a brief check-in with the HR Lead to ensure essential services aren't being deferred.</li>\n  </ul>\n</div>\n\n<hr />\n\n<p>Best regards,<br>\n<b>FP&A Automation System</b></p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        -16
+      ],
+      "id": "728adddf-6a2b-4e1d-942b-3f399ac71ee2",
+      "name": "Send a message",
+      "webhookId": "cafc6da2-4eec-4412-a79b-a3500eab8844",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "b7Pn1KhL2L180c2Q",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "111c74f8-f7ba-4e98-a82d-3cab966d7339",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fdbda443cf38804f4b7391778895a877dba9b9fc07be8df10733cccfc464fcd4"
+  },
+  "nodeGroups": [],
+  "id": "8GiiQZwnJJkcVnI3",
+  "tags": []
+}
